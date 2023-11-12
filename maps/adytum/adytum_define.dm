@@ -4,6 +4,11 @@
 	path = "adytum"
 	ground_noun = "ground"
 
+	station_name = "Downtown Adytum"
+	station_short = "Downtown"
+
+	num_exoplanets = 0
+
 	lobby_screens = list('maps/adytum/adytum_lobby.png')
 
 	lobby_tracks = list(
