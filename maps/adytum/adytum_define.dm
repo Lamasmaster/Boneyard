@@ -4,6 +4,9 @@
 	path = "adytum"
 	ground_noun = "ground"
 
+	station_name = "Downtown Adytum"
+	station_short = "Downtown"
+
 	lobby_screens = list('maps/adytum/adytum_lobby.png')
 
 	lobby_tracks = list(

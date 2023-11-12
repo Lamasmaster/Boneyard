@@ -1,3 +1,9 @@
 #ifndef CONTENT_PACK_BONEYARD
 #define CONTENT_PACK_BONEYARD
+
+// BEGIN_INCLUDE
+#include "_boneyard.dm"
+#include "flooring\planetary.dm"
+// END_INCLUDE
+
 #endif
