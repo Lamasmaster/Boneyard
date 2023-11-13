@@ -3,6 +3,15 @@
 
 // BEGIN_INCLUDE
 #include "_boneyard.dm"
+
+//CULTURES BEGIN
+#include "culture\culture_overrides.dm"
+#include "culture\culture.dm"
+#include "culture\faction.dm"
+#include "culture\language.dm"
+#include "culture\location.dm"
+//CULTURES END
+
 #include "flooring\planetary.dm"
 // END_INCLUDE
 
