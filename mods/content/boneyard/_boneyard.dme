@@ -12,7 +12,14 @@
 #include "culture\location.dm"
 //CULTURES END
 
+//CLOTHING BEGIN
+#include "clothing\wastelander.dm"
+//CLOTHING END
+
+//MAPPING BEGIN
 #include "flooring\planetary.dm"
+//MAPPING END
+
 // END_INCLUDE
 
 #endif
