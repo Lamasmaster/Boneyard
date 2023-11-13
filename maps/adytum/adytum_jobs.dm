@@ -15,5 +15,10 @@
 	outfit_type = /decl/hierarchy/outfit/job/resident
 	department_types = list(/decl/department/resident)
 
+/* Reminder to shove this later into it's own file so it doesn't clutter jobs
+	also replace the uniform with generic waster outfit.*/
+
 /decl/hierarchy/outfit/job/resident
 	name = "Job - Resident"
+	uniform = /obj/item/clothing/under/vault_jumpsuit
+	shoes = /obj/item/clothing/shoes/jackboots
