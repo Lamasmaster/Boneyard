@@ -13,6 +13,9 @@
 /obj/abstract/landmark/latejoin/cyborg,
 /turf/simulated/floor/planetary,
 /area/adytum/first)
+"d" = (
+/turf/simulated/floor/planetary/floor/white,
+/area/adytum/first)
 "e" = (
 /obj/structure/cable/yellow{
 	icon_state = "4-8"
@@ -36,6 +39,9 @@
 	},
 /turf/simulated/floor/airless,
 /area/space)
+"k" = (
+/turf/simulated/floor/planetary/wasteland,
+/area/adytum/first)
 "l" = (
 /obj/machinery/power/solar/improved,
 /obj/structure/cable/yellow{
@@ -79,6 +85,9 @@
 /obj/effect/wallframe_spawn/reinforced,
 /turf/simulated/floor/plating,
 /area/space)
+"r" = (
+/turf/simulated/floor/planetary/floor/green,
+/area/adytum/first)
 "s" = (
 /obj/machinery/power/apc{
 	dir = 4;
@@ -143,6 +152,9 @@
 	},
 /turf/simulated/floor/planetary,
 /area/adytum/first)
+"C" = (
+/turf/simulated/floor/planetary/floor/red,
+/area/adytum/first)
 "D" = (
 /obj/structure/cable/yellow{
 	icon_state = "0-8"
@@ -159,6 +171,9 @@
 /obj/effect/wallframe_spawn/reinforced,
 /turf/simulated/floor/plating,
 /area/space)
+"F" = (
+/turf/simulated/floor/planetary/floor,
+/area/adytum/first)
 "G" = (
 /obj/structure/cable/yellow{
 	icon_state = "1-2"
@@ -252,6 +267,12 @@
 "U" = (
 /obj/abstract/landmark/latejoin/cryo,
 /turf/simulated/floor/planetary,
+/area/adytum/first)
+"V" = (
+/turf/simulated/floor/planetary/floor/dark,
+/area/adytum/first)
+"W" = (
+/turf/simulated/floor/planetary/floor/blue,
 /area/adytum/first)
 "X" = (
 /obj/effect/wallframe_spawn/reinforced,
@@ -1700,9 +1721,9 @@ J
 J
 J
 J
-J
-J
-J
+F
+F
+F
 J
 J
 J
@@ -1754,9 +1775,9 @@ J
 J
 J
 J
-J
-J
-J
+W
+W
+W
 J
 S
 S
@@ -1808,9 +1829,9 @@ J
 J
 J
 J
-J
-J
-J
+V
+V
+V
 y
 J
 I
@@ -1862,9 +1883,9 @@ J
 J
 J
 J
-J
-J
-J
+r
+r
+r
 J
 S
 S
@@ -1916,9 +1937,9 @@ J
 J
 J
 J
-J
-J
-J
+C
+C
+C
 y
 J
 U
@@ -1970,9 +1991,9 @@ J
 J
 J
 J
-J
-J
-J
+d
+d
+d
 f
 S
 S
@@ -2024,9 +2045,9 @@ J
 J
 J
 J
-J
-J
-J
+k
+k
+k
 y
 J
 c
@@ -2078,9 +2099,9 @@ J
 J
 J
 J
-J
-J
-J
+k
+k
+k
 J
 J
 J
