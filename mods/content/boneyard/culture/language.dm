@@ -1,9 +1,9 @@
 //DEFINES START
-#define LANGUAGE_ENGLISH	"American English"
-#define LANGUAGE_FRENCH		"Canadian French"
-#define LANGUAGE_SPANISH	"Mexican Spanish"
+#define LANGUAGE_ENGLISH	"English"
+#define LANGUAGE_FRENCH		"French"
+#define LANGUAGE_SPANISH	"Spanish"
 #define LANGUAGE_RUSSIAN	"Russian"
-#define LANGUAGE_CHINESE	"Simplified Chinese"
+#define LANGUAGE_CHINESE	"Mandarin"
 /*#define LANGUAGE_UNITY		"Mutant"*/
 //DEFINES END
 
@@ -29,7 +29,7 @@
 
 /decl/language/human/french
 	name = LANGUAGE_FRENCH
-	desc = "A dialect of French that survived annexation and integration of Canada proper into USA. While nearly wiped out there are still small communities keeping it alive."
+	desc = "A romance language with roots in Europe, existed in concentrated areas of annexed Canada."
 	colour = COLOR_BLUE
 	key = "fr"
 	shorthand = "FR"
@@ -44,7 +44,7 @@
 		"ing", "the", "ver", "was", "ith", "nous"
 	)
 
-/decl/language/human/russian
+/decl/language/human/russian /* Causes some problems with runechat but other than that just works / Remember to port Baystation 12 languages on paper PR*/
 	name = LANGUAGE_RUSSIAN
 	desc = "Ancient eastern Slavic language that relies on cyrillic in it's written form. Exclusively found in Vaults where descendants of Soviet diplomats passed it on."
 	colour = COLOR_RED_LIGHT
@@ -52,10 +52,9 @@
 	shorthand = "RS"
 	partial_understanding = list()
 	syllables = list(
-		"rus", "zem", "ave", "groz", "ski", "ska", "ven", "konst", "pol", "lin", "svy",
-		"danya", "da", "mied", "zan", "das", "krem", "myka", "to", "st", "no", "na", "ni",
-		"ko", "ne", "en", "po", "ra", "li", "on", "byl", "cto", "eni", "ost", "ol", "ego",
-		"ver", "stv", "pro"
+		"русь", "Зем", "авеню", "Гроз", "лыжи", "ска", "вен", "конст", "пол", "Лин", "сви",
+		"Даня", "да", "Мид", "Зан", "дас", "крем", "Мика", "до", "ул", "нет", "про", "версия",
+		"ко", "пе", "ru", "по", "ли", "на", "был", "Эни", "ост", "ол", "эго"
 	)
 
 /decl/language/human/spanish
