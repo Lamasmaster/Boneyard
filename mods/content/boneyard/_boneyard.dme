@@ -3,23 +3,26 @@
 
 // BEGIN_INCLUDE
 #include "_boneyard.dm"
-
-//CULTURES BEGIN
-#include "culture\culture_overrides.dm"
+#include "clothing\wastelander.dm"
 #include "culture\culture.dm"
+#include "culture\culture_overrides.dm"
 #include "culture\faction.dm"
 #include "culture\language.dm"
 #include "culture\location.dm"
-//CULTURES END
-
-//CLOTHING BEGIN
-#include "clothing\wastelander.dm"
-//CLOTHING END
-
-//MAPPING BEGIN
 #include "flooring\planetary.dm"
-//MAPPING END
-
+#include "weapons\defines.dm"
+#include "weapons\melee\knives.dm"
+#include "weapons\ranged\ammunition.dm"
+#include "weapons\ranged\automatics.dm"
+#include "weapons\ranged\pistols.dm"
+#include "weapons\ranged\revolvers.dm"
 // END_INCLUDE
 
 #endif
+// BEGIN_INTERNALS
+// END_INTERNALS
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+// END_FILE_DIR
+// BEGIN_PREFERENCES
+// END_PREFERENCES
