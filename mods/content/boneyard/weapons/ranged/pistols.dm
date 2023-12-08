@@ -8,15 +8,15 @@ to acquire it. If anything stronger is added handgun wise it should be automatic
 	desc = "A large framed semi-automatic pistol, the SIG-Sauer 14mm autopistol was imported alongside matching 14mm ammunition to the U.S. in limited quantities."
 	load_method = MAGAZINE
 	caliber = CALIBER_PISTOL_HEAVY
-	magazine_type = /obj/item/ammo_magazine/pistol_heavy
-	allowed_magazines = /obj/item/ammo_magazine/pistol_heavy
+	magazine_type = /obj/item/ammo_magazine/boneyard/pistol_heavy
+	allowed_magazines = /obj/item/ammo_magazine/boneyard/pistol_heavy
 	fire_delay = 6
 	accuracy_power = 9 //To reflect it being 20% more accurate in games
 	safety_icon = "safety"
 	ammo_indicator = FALSE
 
-/obj/item/ammo_magazine/pistol_heavy
-	name = "pistol magazine (14mm)"
+/obj/item/ammo_magazine/boneyard/pistol_heavy
+	name = "pistol magazine"
 	icon = 'mods/content/boneyard/assets/icons/weapons/ballistic/ammunition/ammo_mags.dmi'
 	icon_state = "test"
 	origin_tech = "{'combat':2}" //Doesn't really matter we don't use RnD
@@ -27,5 +27,5 @@ to acquire it. If anything stronger is added handgun wise it should be automatic
 	max_ammo = 6
 	multiple_sprites = 1
 
-/obj/item/ammo_magazine/pistol_heavy/empty
+/obj/item/ammo_magazine/boneyard/pistol_heavy/empty
 	initial_ammo = 0
