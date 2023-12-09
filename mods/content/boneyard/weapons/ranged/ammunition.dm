@@ -5,6 +5,12 @@ Magazines are to be kept within respective .dm files of the weapon types.
 Projetile types are to be kept in vicinity of the respective casings.
 */
 
+/* 10mm - 10mm Pistol / Submachine Gun */
+/obj/item/projectile/bullet/pistol //This is here for override
+	fire_sound = 'mods/content/boneyard/assets/sounds/weapons/ballistics/10mm.ogg'
+	damage = 45
+	distance_falloff = 3
+
 /* 14mm - 14mm Pistol */
 /obj/item/ammo_casing/boneyard/pistol_heavy
 	desc = "A pistol bullet casing."
