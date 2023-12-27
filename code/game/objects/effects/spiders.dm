@@ -5,7 +5,7 @@
 	icon = 'icons/effects/effects.dmi'
 	anchored = TRUE
 	density = FALSE
-	var/health = 15
+	max_health = 15
 
 //similar to weeds, but only barfed out by nurses manually
 /obj/effect/spider/explosion_act(severity)
@@ -69,6 +69,8 @@
 	if(exposed_temperature > 300 + T0C)
 		health -= 5
 		healthcheck()
+	if(!QDELETED(src))
+		return ..()
 
 /obj/effect/spider/stickyweb
 	icon_state = "stickyweb1"
@@ -143,7 +145,7 @@
 	icon_state = "lesser"
 	anchored = FALSE
 	layer = BELOW_OBJ_LAYER
-	health = 3
+	max_health = 3
 	var/mob/living/simple_animal/hostile/giant_spider/greater_form
 	var/last_itch = 0
 	var/amount_grown = -1
@@ -334,7 +336,7 @@
 	name = "cocoon"
 	desc = "Something wrapped in silky spider web."
 	icon_state = "cocoon1"
-	health = 60
+	max_health = 60
 
 /obj/effect/spider/cocoon/Initialize()
 	. = ..()

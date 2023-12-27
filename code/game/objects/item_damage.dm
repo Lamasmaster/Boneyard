@@ -126,25 +126,3 @@
 		M.take_organ_damage(7)
 	SET_STATUS_MAX(M, STAT_BLURRY, rand(3,4))
 	return
-
-/obj/item/get_examined_damage_string(health_ratio)
-	if(!can_take_damage())
-		return
-	. = ..()
-
-///Returns whether the item can take damages or if its invulnerable
-/obj/item/proc/can_take_damage()
-	return (health != ITEM_HEALTH_NO_DAMAGE) && (max_health != ITEM_HEALTH_NO_DAMAGE)
-
-///Returns whether the object is currently damaged.
-/obj/item/proc/is_damaged()
-	return can_take_damage() && (health < max_health)
-
-///Returns the percentage of health remaining for this object.
-/obj/item/proc/get_percent_health()
-	return can_take_damage()? round((health * 100)/max_health, 0.01) : 100
-
-///Returns the percentage of damage done to this object.
-/obj/item/proc/get_percent_damage()
-	//Clamp from 0 to 100 so health values larger than max_health don't return unhelpful numbers
-	return clamp(100 - get_percent_health(), 0, 100)

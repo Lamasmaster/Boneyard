@@ -8,7 +8,7 @@
 	anchored                          = FALSE
 	material                          = /decl/material/solid/organic/plastic
 	matter                            = list(/decl/material/solid/metal/steel = MATTER_AMOUNT_SECONDARY)
-	maxhealth                         = 100
+	max_health                         = 100
 	tool_interaction_flags            = TOOL_INTERACTION_DECONSTRUCT
 	var/unwrenched                    = FALSE
 	var/tmp/volume                    = 1000
@@ -129,7 +129,7 @@
 	amount_dispensed          = 10
 	possible_transfer_amounts = @"[10,25,50,100]"
 	volume                    = 7500
-	atom_flags                = ATOM_FLAG_NO_TEMP_CHANGE | ATOM_FLAG_CLIMBABLE
+	atom_flags                = ATOM_FLAG_CLIMBABLE
 	movable_flags             = MOVABLE_FLAG_WHEELED
 
 /obj/structure/reagent_dispensers/watertank/populate_reagents()

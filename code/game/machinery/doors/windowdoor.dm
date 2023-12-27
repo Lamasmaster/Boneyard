@@ -5,18 +5,19 @@
 	icon_state = "left"
 	min_force = 4
 	hitsound = 'sound/effects/Glasshit.ogg'
-	maxhealth = 150 //If you change this, consiter changing ../door/window/brigdoor/ health at the bottom of this .dm file
+	max_health = 150 //If you change this, consiter changing ../door/window/brigdoor/ health at the bottom of this .dm file
 	health = 150
 	visible = 0.0
 	use_power = POWER_USE_OFF
 	stat_immune = NOSCREEN | NOINPUT | NOPOWER
 	uncreated_component_parts = null
-	atom_flags = ATOM_FLAG_NO_TEMP_CHANGE | ATOM_FLAG_CHECKS_BORDER
+	atom_flags = ATOM_FLAG_CHECKS_BORDER
 	opacity = FALSE
 	explosion_resistance = 5
 	pry_mod = 0.5
 	base_type = /obj/machinery/door/window
 	frame_type = /obj/structure/windoor_assembly
+	set_dir_on_update = FALSE // these can properly face all 4 directions! don't force us into just 2!
 	var/base_state = "left"
 
 /obj/machinery/door/window/get_auto_access()
@@ -212,7 +213,7 @@
 	icon = 'icons/obj/doors/windoor.dmi'
 	icon_state = "leftsecure"
 	base_state = "leftsecure"
-	maxhealth = 300
+	max_health = 300
 	health = 300.0 //Stronger doors for prison (regular window door health is 150)
 	pry_mod = 0.65
 

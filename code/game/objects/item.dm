@@ -7,8 +7,6 @@
 
 	var/image/blood_overlay = null //this saves our blood splatter overlay, which will be processed not to go over the edges of the sprite
 	var/randpixel = 6
-	var/health
-	var/max_health
 	var/material_health_multiplier = 0.2
 	var/hitsound
 	var/slot_flags = 0		//This is used to determine on which slots an item can fit.
@@ -208,7 +206,7 @@
 	var/desc_comp = "" //For "description composite"
 	desc_comp += "It is a [w_class_description()] item.<BR>"
 
-	var/desc_damage = get_examined_damage_string(health / max_health)
+	var/desc_damage = get_examined_damage_string()
 	if(length(desc_damage))
 		desc_comp += "[desc_damage]<BR>"
 
@@ -325,6 +323,16 @@
 
 /obj/item/proc/dragged_onto(var/mob/user)
 	return attack_hand_with_interaction_checks(user)
+
+/obj/item/afterattack(var/atom/A, var/mob/user, var/proximity)
+	. = ..()
+	if(. || !proximity)
+		return
+	var/atom_heat = get_heat()
+	if(atom_heat > 0)
+		A.handle_external_heating(atom_heat, src, user)
+		return TRUE
+	return FALSE
 
 /obj/item/attack_hand(mob/user)
 

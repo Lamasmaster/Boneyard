@@ -493,15 +493,6 @@
 		scoop_ore(target)
 		return
 
-	if (istype(target, /turf/simulated/floor/asteroid))
-		for (var/turf/simulated/floor/asteroid/asteroid in RANGE_TURFS(target, 1))
-			if (!(get_dir(owner, asteroid) & owner.dir))
-				continue
-			drill_head.durability -= 1
-			asteroid.gets_dug()
-		scoop_ore(target)
-		return
-
 	if (istype(target, /turf/simulated/wall))
 		var/turf/simulated/wall/wall = target
 		var/wall_hardness = max(wall.material.hardness, wall.reinf_material ? wall.reinf_material.hardness : 0)
@@ -509,6 +500,15 @@
 			to_chat(user, SPAN_WARNING("\The [wall] is too hard to drill through with \the [drill_head]."))
 			drill_head.durability -= 2
 			return
+
+	if(istype(target, /turf))
+		for(var/turf/asteroid in RANGE_TURFS(target, 1))
+			if (!(get_dir(owner, asteroid) & owner.dir))
+				continue
+			if(asteroid.can_be_dug() && asteroid.drop_diggable_resources())
+				drill_head.durability -= 1
+				scoop_ore(asteroid)
+		return
 
 	var/audible = "loudly grinding machinery"
 	if (iscarbon(target)) //splorch
@@ -544,14 +544,14 @@
 	name = "mounted plasma cutter"
 	desc = "An industrial plasma cutter mounted onto the chassis of the mech. "
 	icon_state = "mech_plasma"
-	holding_type = /obj/item/gun/energy/plasmacutter/mounted/mech
+	holding = /obj/item/gun/energy/plasmacutter/mounted/mech
 	restricted_hardpoints = list(HARDPOINT_LEFT_HAND, HARDPOINT_RIGHT_HAND, HARDPOINT_LEFT_SHOULDER, HARDPOINT_RIGHT_SHOULDER)
 	restricted_software = list(MECH_SOFTWARE_UTILITY)
 	origin_tech = "{'materials':4,'engineering':6,'exoticmatter':4,'combat':3}"
 
 /obj/item/mech_equipment/mounted_system/taser/autoplasma
 	icon_state = "mech_energy"
-	holding_type = /obj/item/gun/energy/plasmacutter/mounted/mech/auto
+	holding = /obj/item/gun/energy/plasmacutter/mounted/mech/auto
 	restricted_hardpoints = list(HARDPOINT_LEFT_HAND, HARDPOINT_RIGHT_HAND)
 	restricted_software = list(MECH_SOFTWARE_UTILITY)
 	origin_tech = "{'materials':5,'engineering':6,'exoticmatter':4,'combat':4}"
