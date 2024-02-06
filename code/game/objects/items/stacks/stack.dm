@@ -11,7 +11,7 @@
 
 /obj/item/stack
 	gender = PLURAL
-	origin_tech = "{'materials':1}"
+	origin_tech = @'{"materials":1}'
 	max_health = 32 //Stacks should take damage even if no materials
 	/// A copy of initial matter list when this atom initialized. Stack matter should always assume a single tile.
 	var/list/matter_per_piece
@@ -100,7 +100,7 @@
 /obj/item/stack/get_matter_amount_modifier()
 	. = amount * matter_multiplier
 
-/obj/item/stack/proc/get_recipes()
+/obj/item/stack/proc/get_recipes(stack_type, reinf_mat)
 	return
 
 /obj/item/stack/proc/list_recipes(mob/user, recipes_sublist)

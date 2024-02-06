@@ -26,7 +26,7 @@
 	if(client)
 		for(var/atom/movable/AM in client.screen)
 			var/obj/screen/screenobj = AM
-			if(istype(screenobj) && !screenobj.globalscreen)
+			if(istype(screenobj) && !screenobj.is_global_screen)
 				qdel(screenobj)
 		client.screen = list()
 	if(mind)
@@ -36,7 +36,6 @@
 	return ..()
 
 /mob/proc/remove_screen_obj_references()
-	QDEL_NULL_SCREEN(hands)
 	QDEL_NULL_SCREEN(internals)
 	QDEL_NULL_SCREEN(oxygen)
 	QDEL_NULL_SCREEN(toxin)
@@ -65,6 +64,7 @@
 	if(ispath(move_intent))
 		move_intent = GET_DECL(move_intent)
 	. = ..()
+	ability_master = new(null, src)
 	refresh_ai_handler()
 	START_PROCESSING(SSmobs, src)
 
@@ -403,7 +403,7 @@
 
 	face_atom(A)
 
-	if(!isghost(src) && config.visible_examine)
+	if(!isghost(src) && get_config_value(/decl/config/toggle/visible_examine))
 		if((A.loc != src || (A in get_held_items())))
 			var/look_target = "at \the [A]"
 			if(isobj(A.loc))
@@ -552,6 +552,9 @@
 		return TOPIC_HANDLED
 
 // If usr != src, or if usr == src but the Topic call was not resolved, this is called next.
+/mob/proc/get_comments_record()
+	return
+
 /mob/OnTopic(mob/user, href_list, datum/topic_state/state)
 
 	if(href_list["refresh"])
@@ -567,6 +570,14 @@
 		var/datum/browser/popup = new(user, ckey(name), name, 500, 200)
 		var/list/html = list("<h3>Appearance</h3>")
 		html += replacetext(flavor_text, "\n", "<BR>")
+		var/datum/character_information/comments = get_comments_record()
+		if(comments)
+			if(comments.ic_info)
+				html += "<h3>IC Information</h3>"
+				html += "[comments.ic_info]<br/>"
+			if(comments.ooc_info)
+				html += "<h3>OOC Information</h3>"
+				html += "[comments.ooc_info]<br/>"
 		popup.set_content(jointext(html, null))
 		popup.open()
 		return TOPIC_HANDLED
@@ -704,10 +715,9 @@
 	return 0
 
 //Updates lying and icons
-/mob/proc/UpdateLyingBuckledAndVerbStatus()
-	var/last_lying = lying
+/mob/proc/update_lying()
 	if(!resting && cannot_stand() && can_stand_overridden())
-		lying = 0
+		lying = FALSE
 	else if(buckled)
 		anchored = TRUE
 		if(istype(buckled))
@@ -720,12 +730,16 @@
 	else
 		lying = incapacitated(INCAPACITATION_KNOCKDOWN)
 
+/mob/proc/UpdateLyingBuckledAndVerbStatus()
+	var/last_lying = lying
+	update_lying()
+	if(buckled)
+		anchored = (!istype(buckled) || !buckled.buckle_movable)
 	if(lying)
 		set_density(0)
 		drop_held_items()
 	else
 		set_density(initial(density))
-
 	reset_layer()
 
 	//Temporarily moved here from the various life() procs
@@ -810,7 +824,7 @@
 
 /mob/living/silicon/robot/remove_implant(var/obj/item/implant, var/surgical_removal = FALSE)
 	LAZYREMOVE(embedded, implant)
-	adjustBruteLoss(5)
+	adjustBruteLoss(5, do_update_health = FALSE)
 	adjustFireLoss(10)
 	. = ..()
 
@@ -1081,10 +1095,12 @@
 
 	// Work out if we have any brain damage impacting our dexterity.
 	var/dex_malus = 0
-	if(getBrainLoss() && getBrainLoss() > config.dex_malus_brainloss_threshold) ///brainloss shouldn't instantly cripple you, so the effects only start once past the threshold and escalate from there.
-		dex_malus = clamp(CEILING((getBrainLoss()-config.dex_malus_brainloss_threshold)/10), 0, length(global.dexterity_levels))
-		if(dex_malus > 0)
-			dex_malus = global.dexterity_levels[dex_malus]
+	if(getBrainLoss())
+		var/brainloss_threshold = get_config_value(/decl/config/num/dex_malus_brainloss_threshold)
+		if(getBrainLoss() > brainloss_threshold) ///brainloss shouldn't instantly cripple you, so the effects only start once past the threshold and escalate from there.
+			dex_malus = clamp(CEILING((getBrainLoss()-brainloss_threshold)/10), 0, length(global.dexterity_levels))
+			if(dex_malus > 0)
+				dex_malus = global.dexterity_levels[dex_malus]
 
 	// If this slot does not need an organ we just go off the dexterity of the slot itself.
 	if(isnull(gripper.requires_organ_tag))
@@ -1131,9 +1147,12 @@
 		to_chat(src, SPAN_WARNING("You scrawl down some meaningless lines."))
 	. = stars(text_content, 5)
 
-// mobs do not have mouths by default
+// mobs do not have mouths by default, unless provided by an organ
 /mob/proc/check_has_mouth()
-	return FALSE
+	var/obj/item/organ/external/head/H = get_organ(BP_HEAD, /obj/item/organ/external/head)
+	if(!H || !istype(H) || !H.can_intake_reagents)
+		return FALSE
+	return TRUE
 
 /mob/proc/check_has_eyes()
 	return TRUE
@@ -1350,10 +1369,10 @@
 /mob/verb/whisper_wrapper()
 	set name = ".Whisper"
 	set hidden = TRUE
-	if(config.show_typing_indicator_for_whispers)
+	if(get_config_value(/decl/config/toggle/show_typing_indicator_for_whispers))
 		SStyping.set_indicator_state(client, TRUE)
 	var/message = input("","me (text)") as text|null
-	if(config.show_typing_indicator_for_whispers)
+	if(get_config_value(/decl/config/toggle/show_typing_indicator_for_whispers))
 		SStyping.set_indicator_state(client, FALSE)
 	if (message)
 		whisper(message)
@@ -1361,7 +1380,7 @@
 // Darksight procs.
 /mob/proc/refresh_lighting_master()
 	if(!lighting_master)
-		lighting_master = new
+		lighting_master = new(null, src)
 	if(client)
 		client.screen |= lighting_master
 
@@ -1377,7 +1396,7 @@
 /mob/proc/get_target_zone()
 	return zone_sel?.selecting
 
-/mob/proc/get_temperature_threshold(var/threshold)
+/mob/proc/get_default_temperature_threshold(threshold)
 	switch(threshold)
 		if(COLD_LEVEL_1)
 			return 243
@@ -1392,7 +1411,22 @@
 		if(HEAT_LEVEL_3)
 			return 1000
 		else
-			CRASH("base get_temperature_threshold() called with invalid threshold value.")
+			CRASH("base get_default_temperature_threshold() called with invalid threshold value.")
+
+/mob/proc/get_mob_temperature_threshold(threshold, bodypart)
+
+	// If we have organs, return the requested organ.
+	if(bodypart)
+		var/obj/item/organ/external/organ = get_organ(bodypart)
+		if(organ?.bodytype)
+			return organ.bodytype.get_body_temperature_threshold(threshold)
+
+	// If we have a bodytype, use that.
+	var/decl/bodytype/root_bodytype = get_bodytype()
+	if(root_bodytype)
+		return root_bodytype.get_body_temperature_threshold(threshold)
+
+	return get_default_temperature_threshold(threshold)
 
 /mob/proc/get_unique_enzymes()
 	return

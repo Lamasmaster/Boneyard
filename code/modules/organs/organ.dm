@@ -4,7 +4,7 @@
 	germ_level = 0
 	w_class = ITEM_SIZE_TINY
 	default_action_type = /datum/action/item_action/organ
-	origin_tech = "{'materials':1,'biotech':1}"
+	origin_tech = @'{"materials":1,"biotech":1}'
 	throwforce = 2
 	abstract_type = /obj/item/organ
 
@@ -54,7 +54,7 @@
 /obj/item/organ/attack_self(var/mob/user)
 	return (owner && loc == owner && owner == user)
 
-/obj/item/organ/proc/update_health()
+/obj/item/organ/proc/update_organ_health()
 	return
 
 /obj/item/organ/proc/is_broken()
@@ -202,7 +202,7 @@
 	//dead already, no need for more processing
 	if(status & ORGAN_DEAD)
 		return
-	// Don't process if we're in a freezer, an MMI or a stasis bag.or a freezer or something I dunno
+	// Don't process if we're in a freezer, an interface or a stasis bag.
 	if(is_preserved())
 		return
 	//Process infections
@@ -215,7 +215,7 @@
 			if(reagents.has_reagent(/decl/material/liquid/blood))
 				blood_splatter(get_turf(src), src, 1)
 			reagents.remove_any(0.1)
-		if(config.organs_decay)
+		if(get_config_value(/decl/config/toggle/health_organs_decay))
 			take_general_damage(rand(1,3))
 		germ_level += rand(2,6)
 		if(germ_level >= INFECTION_LEVEL_TWO)
@@ -248,11 +248,18 @@
 		ailment.was_treated_by_chem_effect()
 
 /obj/item/organ/proc/is_preserved()
-	if(istype(loc,/obj/item/organ))
+	if(istype(loc, /obj/item/organ))
 		var/obj/item/organ/O = loc
 		return O.is_preserved()
-	else
-		return (istype(loc,/obj/item/mmi) || istype(loc,/obj/structure/closet/body_bag/cryobag) || istype(loc,/obj/structure/closet/crate/freezer) || istype(loc,/obj/item/storage/box/freezer))
+	var/static/list/preserved_types = list(
+		/obj/item/storage/box/freezer,
+		/obj/structure/closet/crate/freezer,
+		/obj/structure/closet/body_bag/cryobag
+	)
+	for(var/preserved_type in preserved_types)
+		if(istype(loc, preserved_type))
+			return TRUE
+	return FALSE
 
 /obj/item/organ/examine(mob/user)
 	. = ..(user)
@@ -262,6 +269,8 @@
 	if(status & ORGAN_DEAD)
 		to_chat(user, "<span class='notice'>The decay has set into \the [src].</span>")
 
+// TODO: bodytemp rework that handles this with better respect to
+// individual organs vs. expected body temperature for other organs.
 /obj/item/organ/proc/handle_germ_effects()
 	//** Handle the effects of infections
 	var/germ_immunity = owner.get_immunity() //reduces the amount of times we need to call this proc
@@ -279,7 +288,7 @@
 				germ_level += 10
 
 	if(germ_level >= INFECTION_LEVEL_ONE)
-		var/fever_temperature = (owner.get_temperature_threshold(HEAT_LEVEL_1) - owner.species.body_temperature - 5)* min(germ_level/INFECTION_LEVEL_TWO, 1) + owner.species.body_temperature
+		var/fever_temperature = (owner.get_mob_temperature_threshold(HEAT_LEVEL_1) - owner.species.body_temperature - 5)* min(germ_level/INFECTION_LEVEL_TWO, 1) + owner.species.body_temperature
 		owner.bodytemperature += clamp(0, (fever_temperature - T20C)/BODYTEMP_COLD_DIVISOR + 1, fever_temperature - owner.bodytemperature)
 
 	if (germ_level >= INFECTION_LEVEL_TWO)
@@ -365,6 +374,8 @@
 /obj/item/organ/proc/heal_damage(amount)
 	if(can_recover())
 		damage = clamp(0, damage - round(amount, 0.1), max_damage)
+		if(owner)
+			owner.update_health()
 
 /obj/item/organ/attack(var/mob/target, var/mob/user)
 	if(BP_IS_PROSTHETIC(src) || !istype(target) || !istype(user) || (user != target && user.a_intent == I_HELP))
@@ -540,6 +551,8 @@ var/global/list/ailment_reference_cache = list()
 /obj/item/organ/proc/do_install(var/mob/living/carbon/human/target, var/obj/item/organ/external/affected, var/in_place = FALSE, var/update_icon = TRUE, var/detached = FALSE)
 	//Make sure to force the flag accordingly
 	set_detached(detached)
+	if(QDELETED(src))
+		return
 
 	owner = target
 	vital_to_owner = null
@@ -575,7 +588,8 @@ var/global/list/ailment_reference_cache = list()
 	else
 		owner = null
 		vital_to_owner = null
-	return src
+	if(!QDELETED(src))
+		return src
 
 //Events handling for checks and effects that should happen when removing the organ through interactions. Called by the owner mob.
 /obj/item/organ/proc/on_remove_effects(var/mob/living/last_owner)

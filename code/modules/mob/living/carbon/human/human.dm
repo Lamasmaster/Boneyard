@@ -6,12 +6,14 @@
 	icon_state = "body_m_s"
 	mob_sort_value = 6
 	dna = new /datum/dna()
+	mob_default_max_health = 150
 
 	var/list/hud_list[10]
 	var/embedded_flag	  //To check if we've need to roll for damage on movement while an item is imbedded in us.
 	var/step_count
 
-/mob/living/carbon/human/Initialize(mapload, species_name = null, datum/dna/new_dna = null, decl/bodytype/new_bodytype = null)
+/mob/living/carbon/human/Initialize(mapload, species_name, datum/dna/new_dna, decl/bodytype/new_bodytype)
+	current_health = mob_default_max_health
 	setup_hud_overlays()
 	var/list/newargs = args.Copy(2)
 	setup(arglist(newargs))
@@ -46,14 +48,6 @@
 		return
 	var/obj/item/organ/internal/stomach/stomach = get_organ(BP_STOMACH)
 	return stomach?.ingested
-
-/mob/living/carbon/human/get_fullness()
-	if(!should_have_organ(BP_STOMACH))
-		return ..()
-	var/obj/item/organ/internal/stomach/stomach = get_organ(BP_STOMACH, /obj/item/organ/internal/stomach)
-	if(stomach)
-		return nutrition + (stomach.ingested?.total_volume * 10)
-	return 0 //Always hungry, but you can't actually eat. :(
 
 /mob/living/carbon/human/get_inhaled_reagents()
 	if(!should_have_organ(BP_LUNGS))
@@ -97,7 +91,7 @@
 			stat(null, "Hardsuit charge: [cell_status]")
 
 /mob/living/carbon/human/proc/implant_loyalty(mob/living/carbon/human/M, override = FALSE) // Won't override by default.
-	if(!config.use_loyalty_implants && !override) return // Nuh-uh.
+	if(!get_config_value(/decl/config/toggle/use_loyalty_implants) && !override) return // Nuh-uh.
 
 	var/obj/item/implant/loyalty/L = new/obj/item/implant/loyalty(M)
 	L.imp_in = M
@@ -324,12 +318,6 @@
 	dna.check_integrity(src)
 	return
 
-/mob/living/carbon/human/check_has_mouth()
-	var/obj/item/organ/external/head/H = get_organ(BP_HEAD, /obj/item/organ/external/head)
-	if(!H || !istype(H) || !H.can_intake_reagents)
-		return FALSE
-	return TRUE
-
 /mob/living/carbon/human/empty_stomach()
 	SET_STATUS_MAX(src, STAT_STUN, 3)
 
@@ -412,7 +400,7 @@
 	reset_blood()
 
 	if(!client || !key) //Don't boot out anyone already in the mob.
-		for(var/mob/living/carbon/brain/brain in global.player_list) // This is really nasty, does it even work anymore?
+		for(var/mob/living/brain/brain in global.player_list) // This is really nasty, does it even work anymore?
 			if(brain.real_name == src.real_name && brain.mind)
 				brain.mind.transfer_to(src)
 				qdel(brain.loc)
@@ -513,14 +501,16 @@
 		force_update_limbs()
 
 		// Check and clear hair.
-		var/decl/sprite_accessory/hair/hairstyle = GET_DECL(h_style)
+		var/set_hairstyle = get_hairstyle()
+		var/decl/sprite_accessory/hair/hairstyle = GET_DECL(set_hairstyle)
 		if(!hairstyle?.accessory_is_available(src, species, new_bodytype))
-			change_hair(new_bodytype.default_h_style, FALSE)
-		var/decl/sprite_accessory/hair/facialhairstyle = GET_DECL(f_style)
+			set_hairstyle(new_bodytype.default_h_style, skip_update = TRUE)
+		set_hairstyle = get_facial_hairstyle()
+		var/decl/sprite_accessory/hair/facialhairstyle = GET_DECL(set_hairstyle)
 		if(!facialhairstyle?.accessory_is_available(src, species, new_bodytype))
-			change_facial_hair(new_bodytype.default_f_style, FALSE)
+			set_facial_hairstyle(new_bodytype.default_f_style, skip_update = TRUE)
 		// TODO: check markings.
-
+		update_hair()
 		update_eyes()
 		return TRUE
 	return FALSE
@@ -549,7 +539,7 @@
 	holder_type = null
 	if(species.holder_type)
 		holder_type = species.holder_type
-	maxHealth = species.total_health
+	set_max_health(species.total_health, skip_health_update = TRUE) // Health update is handled later.
 	remove_extension(src, /datum/extension/armor)
 	if(species.natural_armour_values)
 		set_extension(src, /datum/extension/armor, species.natural_armour_values)
@@ -652,7 +642,7 @@
 /mob/living/carbon/human/proc/apply_bodytype_appearance()
 	var/decl/bodytype/root_bodytype = get_bodytype()
 	if(!root_bodytype)
-		skin_colour = COLOR_BLACK
+		set_skin_colour(COLOR_BLACK)
 	else
 		root_bodytype.apply_appearance(src)
 		default_pixel_x = initial(pixel_x) + root_bodytype.pixel_offset_x
@@ -944,7 +934,7 @@
 
 //Point at which you dun breathe no more. Separate from asystole crit, which is heart-related.
 /mob/living/carbon/human/nervous_system_failure()
-	return getBrainLoss() >= maxHealth * 0.75
+	return getBrainLoss() >= get_max_health() * 0.75
 
 /mob/living/carbon/human/melee_accuracy_mods()
 	. = ..()
@@ -1123,14 +1113,15 @@
 
 	set_species(species_name, new_bodytype)
 	var/decl/bodytype/root_bodytype = get_bodytype() // root bodytype is set in set_species
-	if(!skin_colour)
-		skin_colour = root_bodytype.base_color
-	if(!hair_colour)
-		hair_colour = root_bodytype.base_hair_color
-	if(!facial_hair_colour)
-		facial_hair_colour = root_bodytype.base_hair_color
-	if(!eye_colour)
-		eye_colour = root_bodytype.base_eye_color
+	if(!get_skin_colour())
+		set_skin_colour(root_bodytype.base_color, skip_update = TRUE)
+	if(!get_hair_colour())
+		set_hair_colour(root_bodytype.base_hair_color, skip_update = TRUE)
+	if(!get_facial_hair_colour())
+		set_facial_hair_colour(root_bodytype.base_hair_color, skip_update = TRUE)
+	if(!get_eye_colour())
+		set_eye_colour(root_bodytype.base_eye_color, skip_update = TRUE)
+
 	root_bodytype.set_default_hair(src, override_existing = TRUE, defer_update_hair = TRUE)
 	if(!blood_type && length(species?.blood_types))
 		blood_type = pickweight(species.blood_types)
@@ -1198,3 +1189,9 @@
 			add_stressor(/datum/stressor/thirsty, STRESSOR_DURATION_INDEFINITE)
 		else
 			remove_stressor(/datum/stressor/thirsty)
+
+/mob/living/carbon/human/get_comments_record()
+	if(comments_record_id)
+		return SScharacter_info.get_record(comments_record_id, TRUE)
+	return ..()
+

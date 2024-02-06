@@ -37,7 +37,7 @@
 	..()
 	if(!species) species = global.using_map.default_species
 	var/species_choice = islist(species) ? pickweight(species) : species
-	new /mob/living/carbon/human/corpse(loc, species_choice, src)
+	new /mob/living/carbon/human/corpse(loc, species_choice, null, null, src)
 	return INITIALIZE_HINT_QDEL
 
 /obj/abstract/landmark/corpse/proc/randomize_appearance(var/mob/living/carbon/human/M, species_choice)
@@ -55,32 +55,32 @@
 
 	if((spawn_flags & CORPSE_SPAWNER_RANDOM_SKIN_COLOR))
 		if(species_choice in skin_colors_per_species)
-			M.change_skin_color(pick(skin_colors_per_species[species_choice]))
+			M.set_skin_colour(pick(skin_colors_per_species[species_choice]))
 		else
 			M.randomize_skin_color()
 
 	if((spawn_flags & CORPSE_SPAWNER_RANDOM_HAIR_COLOR))
 		if(species_choice in hair_colors_per_species)
-			M.change_hair_color(pick(hair_colors_per_species[species_choice]))
+			M.set_hair_colour(pick(hair_colors_per_species[species_choice]))
 		else
 			M.randomize_hair_color()
-		M.change_facial_hair_color(M.hair_colour)
+		M.set_facial_hair_colour(M.get_hair_colour())
 
 	if((spawn_flags & CORPSE_SPAWNER_RANDOM_HAIR_STYLE))
 		if(species_choice in hair_styles_per_species)
-			M.change_hair(pick(hair_styles_per_species[species_choice]))
+			M.set_hairstyle(pick(hair_styles_per_species[species_choice]))
 		else
 			M.randomize_hair_style()
 
 	if((spawn_flags & CORPSE_SPAWNER_RANDOM_FACIAL_STYLE))
 		if(species_choice in facial_styles_per_species)
-			M.change_facial_hair(pick(facial_styles_per_species[species_choice]))
+			M.set_facial_hairstyle(pick(facial_styles_per_species[species_choice]))
 		else
 			M.randomize_facial_hair_style()
 
 	if((spawn_flags & CORPSE_SPAWNER_RANDOM_EYE_COLOR))
 		if(species_choice in eye_colors_per_species)
-			M.change_eye_color(pick(eye_colors_per_species[species_choice]))
+			M.set_eye_colour(pick(eye_colors_per_species[species_choice]))
 		else
 			M.randomize_eye_color()
 

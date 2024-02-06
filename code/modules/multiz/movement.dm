@@ -121,7 +121,7 @@
 // Entered() which is part of Move(), by spawn()ing we let that complete.  But we want to preserve if we were in client movement
 // or normal movement so other move behavior can continue.
 /atom/movable/proc/begin_falling(var/lastloc, var/below)
-	addtimer(CALLBACK(src, /atom/movable/proc/fall_callback, below), 0)
+	addtimer(CALLBACK(src, TYPE_PROC_REF(/atom/movable, fall_callback), below), 0)
 
 /atom/movable/proc/fall_callback(var/turf/below)
 	if(!QDELETED(src))
@@ -187,7 +187,11 @@
 		return species.can_fall(src)
 
 /atom/movable/proc/protected_from_fall_damage(var/turf/landing)
-	return !!(locate(/obj/structure/stairs) in landing)
+	if(!!(locate(/obj/structure/stairs) in landing))
+		return TRUE
+	var/turf/exterior/wall/ramp = landing
+	if(istype(ramp) && ramp.ramp_slope_direction) // walking down a ramp
+		return TRUE
 
 /mob/protected_from_fall_damage(var/turf/landing)
 	. = ..()
@@ -283,7 +287,6 @@
 			var/obj/item/organ/external/victim = pick(victims)
 			victim.dislocate()
 			to_chat(src, "<span class='warning'>You feel a sickening pop as your [victim.joint] is wrenched out of the socket.</span>")
-	updatehealth()
 
 /mob/living/carbon/human/proc/climb_up(atom/A)
 	if(!isturf(loc) || !bound_overlay || bound_overlay.destruction_timer || is_physically_disabled())	// This destruction_timer check ideally wouldn't be required, but I'm not awake enough to refactor this to not need it.
@@ -374,7 +377,7 @@
 	. = ..()
 	owner = user
 	follow()
-	events_repository.register(/decl/observ/moved, owner, src, /atom/movable/z_observer/proc/follow)
+	events_repository.register(/decl/observ/moved, owner, src, TYPE_PROC_REF(/atom/movable/z_observer, follow))
 
 /atom/movable/z_observer/proc/follow()
 
@@ -398,7 +401,7 @@
 	qdel(src)
 
 /atom/movable/z_observer/Destroy()
-	events_repository.unregister(/decl/observ/moved, owner, src, /atom/movable/z_observer/proc/follow)
+	events_repository.unregister(/decl/observ/moved, owner, src, TYPE_PROC_REF(/atom/movable/z_observer, follow))
 	owner = null
 	. = ..()
 

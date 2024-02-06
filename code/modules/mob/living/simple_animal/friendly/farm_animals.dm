@@ -11,7 +11,7 @@
 	turns_per_move = 5
 	see_in_dark = 6
 	faction = "goat"
-	health = 40
+	mob_default_max_health = 40
 	natural_weapon = /obj/item/natural_weapon/hooves
 
 	meat_type = /obj/item/chems/food/meat/goat
@@ -28,10 +28,9 @@
 	expected_type = /mob/living/simple_animal/hostile/retaliate/goat
 
 /datum/ai/goat/do_process(time_elapsed)
-	. = ..()
-	var/mob/living/simple_animal/hostile/retaliate/goat/goat = body
 
 	//chance to go crazy and start wacking stuff
+	var/mob/living/simple_animal/hostile/retaliate/goat/goat = body
 	if(!length(goat.enemies) && prob(1))
 		goat.Retaliate()
 
@@ -66,9 +65,11 @@
 	QDEL_NULL(udder)
 	. = ..()
 
-/mob/living/simple_animal/hostile/retaliate/goat/handle_regular_status_updates()
+/mob/living/simple_animal/hostile/retaliate/goat/handle_living_non_stasis_processes()
 	. = ..()
-	if(. && stat == CONSCIOUS && udder && prob(5))
+	if(!.)
+		return FALSE
+	if(stat == CONSCIOUS && udder && prob(5))
 		udder.add_reagent(/decl/material/liquid/drink/milk, rand(5, 10))
 
 /mob/living/simple_animal/hostile/retaliate/goat/Retaliate()
@@ -100,7 +101,7 @@
 	speak_chance = 1
 	turns_per_move = 5
 	see_in_dark = 6
-	health = 50
+	mob_default_max_health = 50
 
 	meat_type = /obj/item/chems/food/meat/beef
 	meat_amount = 6
@@ -140,16 +141,18 @@
 		return TRUE
 	. = ..()
 
-/mob/living/simple_animal/cow/handle_regular_status_updates()
+/mob/living/simple_animal/cow/handle_living_non_stasis_processes()
 	. = ..()
-	if(. && udder && prob(5))
+	if(!.)
+		return FALSE
+	if(udder && prob(5))
 		udder.add_reagent(/decl/material/liquid/drink/milk, rand(5, 10))
 
 /mob/living/simple_animal/cow/default_disarm_interaction(mob/user)
 	if(stat != DEAD && !HAS_STATUS(src, STAT_WEAK))
 		user.visible_message(SPAN_NOTICE("\The [user] tips over \the [src]."))
 		SET_STATUS_MAX(src, STAT_WEAK, 30)
-		addtimer(CALLBACK(src, .proc/do_tip_response), rand(20, 50))
+		addtimer(CALLBACK(src, PROC_REF(do_tip_response)), rand(20, 50))
 		return TRUE
 	return ..()
 
@@ -167,7 +170,7 @@
 	emote_see = list("pecks at the ground","flaps its tiny wings")
 	speak_chance = 2
 	turns_per_move = 2
-	health = 1
+	mob_default_max_health = 1
 	pass_flags = PASS_FLAG_TABLE | PASS_FLAG_GRILLE
 	mob_size = MOB_SIZE_MINISCULE
 
@@ -184,7 +187,7 @@
 	pixel_x = rand(-6, 6)
 	pixel_y = rand(0, 10)
 
-/mob/living/simple_animal/chick/Life()
+/mob/living/simple_animal/chick/handle_living_non_stasis_processes()
 	. = ..()
 	if(!.)
 		return FALSE
@@ -206,7 +209,7 @@ var/global/chicken_count = 0
 	emote_see = list("pecks at the ground","flaps its wings viciously")
 	speak_chance = 2
 	turns_per_move = 3
-	health = 10
+	mob_default_max_health = 10
 	pass_flags = PASS_FLAG_TABLE
 	mob_size = MOB_SIZE_SMALL
 
@@ -251,7 +254,7 @@ var/global/chicken_count = 0
 	else
 		..()
 
-/mob/living/simple_animal/chicken/Life()
+/mob/living/simple_animal/chicken/handle_living_non_stasis_processes()
 	. = ..()
 	if(!.)
 		return FALSE

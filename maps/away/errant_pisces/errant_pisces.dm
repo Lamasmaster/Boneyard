@@ -24,8 +24,7 @@
 	turns_per_move = 5
 	meat_type = /obj/item/chems/food/sharkmeat
 	speed = 2
-	maxHealth = 100
-	health = 100
+	mob_default_max_health = 100
 	natural_weapon = /obj/item/natural_weapon/bite/strong
 	break_stuff_probability = 35
 	faction = "shark"
@@ -64,7 +63,7 @@
 	desc = "A fillet of cosmoshark meat."
 	icon_state = "fishfillet"
 	filling_color = "#cecece"
-	center_of_mass = @"{'x':17,'y':13}"
+	center_of_mass = @'{"x":17,"y":13}'
 	bitesize = 8
 
 /obj/item/chems/food/sharkmeat/populate_reagents()

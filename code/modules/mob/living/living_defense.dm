@@ -170,7 +170,7 @@
 /mob/living/momentum_do(var/power, var/datum/thrownthing/TT, var/atom/movable/AM)
 	if(power >= 0.75)		//snowflake to enable being pinned to walls
 		var/direction = TT.init_dir
-		throw_at(get_edge_target_turf(src, direction), min((TT.maxrange - TT.dist_travelled) * power, 10), throw_speed * min(power, 1.5), callback = CALLBACK(src,/mob/living/proc/pin_to_wall,AM,direction))
+		throw_at(get_edge_target_turf(src, direction), min((TT.maxrange - TT.dist_travelled) * power, 10), throw_speed * min(power, 1.5), callback = CALLBACK(src, TYPE_PROC_REF(/mob/living, pin_to_wall), AM, direction))
 		visible_message(SPAN_DANGER("\The [src] staggers under the impact!"),SPAN_DANGER("You stagger under the impact!"))
 		return
 
@@ -222,12 +222,11 @@
 	if(!damage || !istype(user))
 		return
 
-	adjustBruteLoss(damage)
 	admin_attack_log(user, src, "Attacked", "Was attacked", "attacked")
 
 	src.visible_message("<span class='danger'>\The [user] has [attack_message] \the [src]!</span>")
+	adjustBruteLoss(damage)
 	user.do_attack_animation(src)
-	spawn(1) updatehealth()
 	return 1
 
 /mob/living/proc/can_ignite()
@@ -304,7 +303,7 @@
 /mob/living/lava_act(datum/gas_mixture/air, temperature, pressure)
 	fire_act(air, temperature)
 	FireBurn(0.4*vsc.fire_firelevel_multiplier, temperature, pressure)
-	. =  (health <= 0) ? ..() : FALSE
+	. =  (current_health <= 0) ? ..() : FALSE
 
 // called when something steps onto a mob
 // this handles mulebots and vehicles

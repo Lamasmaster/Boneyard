@@ -37,7 +37,7 @@
 	icon_reinf = 'icons/turf/walls/reinforced_stone.dmi'
 	color = "#007a00"
 	weight = MAT_VALUE_VERY_HEAVY
-	stack_origin_tech = "{'materials':5}"
+	stack_origin_tech = @'{"materials":5}'
 	reflectiveness = MAT_VALUE_MATTE
 	value = 1.5
 	default_solid_form = /obj/item/stack/material/puck
@@ -85,7 +85,7 @@
 	color = COLOR_GOLD
 	hardness = MAT_VALUE_FLEXIBLE + 5
 	integrity = 100
-	stack_origin_tech = "{'materials':4}"
+	stack_origin_tech = @'{"materials":4}'
 	ore_result_amount = 5
 	ore_name = "native gold"
 	ore_spread_chance = 10
@@ -162,7 +162,7 @@
 	color = COLOR_COPPER
 	weight = MAT_VALUE_NORMAL
 	hardness = MAT_VALUE_FLEXIBLE + 10
-	stack_origin_tech = "{'materials':2}"
+	stack_origin_tech = @'{"materials":2}'
 
 /decl/material/solid/metal/silver
 	name = "silver"
@@ -172,7 +172,7 @@
 	boiling_point = 2444
 	color = "#d1e6e3"
 	hardness = MAT_VALUE_FLEXIBLE + 10
-	stack_origin_tech = "{'materials':3}"
+	stack_origin_tech = @'{"materials":3}'
 	ore_result_amount = 5
 	ore_spread_chance = 10
 	ore_name = "native silver"
@@ -210,27 +210,28 @@
 	)
 	default_solid_form = /obj/item/stack/material/sheet
 
-/decl/material/solid/metal/steel/generate_recipes(var/reinforce_material)
+/decl/material/solid/metal/steel/generate_recipes(stack_type, reinforce_material)
 	. = ..()
-	if(reinforce_material)	//recipes below don't support composite materials
-		return
-	. += new/datum/stack_recipe/furniture/closet(src)
-	. += new/datum/stack_recipe/furniture/tank_dispenser(src)
-	. += new/datum/stack_recipe/furniture/canister(src)
-	. += new/datum/stack_recipe/furniture/tank(src)
-	. += new/datum/stack_recipe/cannon(src)
-	. += new/datum/stack_recipe_list("tiling", create_recipe_list(/datum/stack_recipe/tile/metal))
-	. += new/datum/stack_recipe/furniture/computerframe(src)
-	. += new/datum/stack_recipe/furniture/machine(src)
-	. += new/datum/stack_recipe_list("airlock assemblies", create_recipe_list(/datum/stack_recipe/furniture/door_assembly))
-	. += new/datum/stack_recipe/grenade(src)
-	. += new/datum/stack_recipe/light(src)
-	. += new/datum/stack_recipe/light_small(src)
-	. += new/datum/stack_recipe/light_switch(src)
-	. += new/datum/stack_recipe/light_switch/windowtint(src)
-	. += new/datum/stack_recipe/apc(src)
-	. += new/datum/stack_recipe/air_alarm(src)
-	. += new/datum/stack_recipe/fire_alarm(src)
+	if(!reinforce_material && islist(.))
+		if(!ispath(stack_type))
+			. += new/datum/stack_recipe/furniture/closet(src)
+			. += new/datum/stack_recipe/furniture/tank_dispenser(src)
+			. += new/datum/stack_recipe/furniture/canister(src)
+			. += new/datum/stack_recipe/furniture/tank(src)
+			. += new/datum/stack_recipe/cannon(src)
+			. += new/datum/stack_recipe_list("tiling", create_recipe_list(/datum/stack_recipe/tile/metal))
+			. += new/datum/stack_recipe/furniture/computerframe(src)
+			. += new/datum/stack_recipe_list("airlock assemblies", create_recipe_list(/datum/stack_recipe/furniture/door_assembly))
+			. += new/datum/stack_recipe/grenade(src)
+			. += new/datum/stack_recipe/light(src)
+			. += new/datum/stack_recipe/light_small(src)
+			. += new/datum/stack_recipe/light_switch(src)
+			. += new/datum/stack_recipe/light_switch/windowtint(src)
+			. += new/datum/stack_recipe/apc(src)
+			. += new/datum/stack_recipe/air_alarm(src)
+			. += new/datum/stack_recipe/fire_alarm(src)
+		else if(ispath(stack_type, /obj/item/stack/material/strut))
+			. += new/datum/stack_recipe/furniture/machine(src)
 
 /decl/material/solid/metal/steel/holographic
 	name = "holographic steel"
@@ -242,7 +243,7 @@
 	exoplanet_rarity_plant = MAT_RARITY_NOWHERE
 	exoplanet_rarity_gas = MAT_RARITY_NOWHERE
 
-/decl/material/solid/metal/steel/holographic/get_recipes(reinf_mat)
+/decl/material/solid/metal/steel/holographic/get_recipes(stack_type, reinf_mat)
 	return list()
 
 /decl/material/solid/metal/stainlesssteel
@@ -283,11 +284,10 @@
 	taste_description = "metal"
 	default_solid_form = /obj/item/stack/material/shiny
 
-/decl/material/solid/metal/aluminium/generate_recipes(var/reinforce_material)
+/decl/material/solid/metal/aluminium/generate_recipes(stack_type, reinforce_material)
 	. = ..()
-	if(reinforce_material)	//recipes below don't support composite materials
-		return
-	. += new/datum/stack_recipe/grenade(src)
+	if(!reinforce_material && islist(.) && !ispath(stack_type))
+		. += new/datum/stack_recipe/grenade(src)
 
 /decl/material/solid/metal/aluminium/holographic
 	name = "holoaluminium"
@@ -298,7 +298,7 @@
 	exoplanet_rarity_plant = MAT_RARITY_NOWHERE
 	exoplanet_rarity_gas = MAT_RARITY_NOWHERE
 
-/decl/material/solid/metal/aluminium/holographic/get_recipes(reinf_mat)
+/decl/material/solid/metal/aluminium/holographic/get_recipes(stack_type, reinf_mat)
 	return list()
 
 /decl/material/solid/metal/plasteel
@@ -317,7 +317,7 @@
 	brute_armor = 8
 	burn_armor = 10
 	hardness = MAT_VALUE_VERY_HARD
-	stack_origin_tech = "{'materials':2}"
+	stack_origin_tech = @'{"materials":2}'
 	hitsound = 'sound/weapons/smash.ogg'
 	value = 1.4
 	reflectiveness = MAT_VALUE_MATTE
@@ -325,13 +325,12 @@
 	exoplanet_rarity_plant = MAT_RARITY_UNCOMMON
 	exoplanet_rarity_gas = MAT_RARITY_NOWHERE
 
-/decl/material/solid/metal/plasteel/generate_recipes(var/reinforce_material)
+/decl/material/solid/metal/plasteel/generate_recipes(stack_type, reinforce_material)
 	. = ..()
-	if(reinforce_material)	//recipes below don't support composite materials
-		return
-	. += new/datum/stack_recipe/ai_core(src)
-	. += new/datum/stack_recipe/furniture/crate(src)
-	. += new/datum/stack_recipe/grip(src)
+	if(!reinforce_material && islist(.) && !ispath(stack_type))
+		. += new/datum/stack_recipe/ai_core(src)
+		. += new/datum/stack_recipe/furniture/crate(src)
+		. += new/datum/stack_recipe/grip(src)
 
 /decl/material/solid/metal/titanium
 	name = "titanium"
@@ -352,18 +351,17 @@
 	value = 1.5
 	explosion_resistance = 25
 	hardness = MAT_VALUE_VERY_HARD
-	stack_origin_tech = "{'materials':2}"
+	stack_origin_tech = @'{"materials":2}'
 	hitsound = 'sound/weapons/smash.ogg'
 	reflectiveness = MAT_VALUE_MATTE
 	default_solid_form = /obj/item/stack/material/reinforced
 
-/decl/material/solid/metal/titanium/generate_recipes(var/reinforce_material)
+/decl/material/solid/metal/titanium/generate_recipes(stack_type, reinforce_material)
 	. = ..()
-	if(reinforce_material)	//recipes below don't support composite materials
-		return
-	. += new/datum/stack_recipe/ai_core(src)
-	. += new/datum/stack_recipe/furniture/crate(src)
-	. += new/datum/stack_recipe/grip(src)
+	if(!reinforce_material && islist(.) && !ispath(stack_type))
+		. += new/datum/stack_recipe/ai_core(src)
+		. += new/datum/stack_recipe/furniture/crate(src)
+		. += new/datum/stack_recipe/grip(src)
 
 /decl/material/solid/metal/plasteel/ocp
 	name = "osmium-carbide plasteel"
@@ -378,7 +376,7 @@
 	color = "#9bc6f2"
 	brute_armor = 4
 	burn_armor = 20
-	stack_origin_tech = "{'materials':3}"
+	stack_origin_tech = @'{"materials":3}'
 	construction_difficulty = MAT_VALUE_VERY_HARD_DIY
 	value = 1.8
 	exoplanet_rarity_plant = MAT_RARITY_UNCOMMON
@@ -391,7 +389,7 @@
 	melting_point = 3307
 	boiling_point = 5285
 	color = "#9999ff"
-	stack_origin_tech = "{'materials':5}"
+	stack_origin_tech = @'{"materials":5}'
 	construction_difficulty = MAT_VALUE_VERY_HARD_DIY
 	value = 1.3
 
@@ -404,7 +402,7 @@
 	color = "#deddff"
 	weight = MAT_VALUE_VERY_HEAVY
 	wall_support_value = MAT_VALUE_VERY_HEAVY
-	stack_origin_tech = "{'materials':2}"
+	stack_origin_tech = @'{"materials":2}'
 	ore_compresses_to = /decl/material/solid/metal/osmium
 	ore_result_amount = 5
 	ore_spread_chance = 10

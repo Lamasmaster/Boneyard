@@ -25,7 +25,7 @@
 /obj/machinery/atmospherics/pipe/simple/heat_exchanging/Initialize()
 	. = ..()
 	color = "#404040" //we don't make use of the fancy overlay system for colours, use this to set the default.
-	add_filter("glow",1, list(type="drop_shadow", x = 0, y = 0, offset = 0, size = 4))
+	add_filter("glow",1, list(type = "drop_shadow", x = 0, y = 0, offset = 0, size = 4))
 
 /obj/machinery/atmospherics/pipe/simple/heat_exchanging/set_dir(new_dir)
 	. = ..()
@@ -79,7 +79,7 @@
 
 			var/mob/living/carbon/human/H = buckled_mob
 			if(istype(H) && H.species)
-				heat_limit = H.get_temperature_threshold(HEAT_LEVEL_3)
+				heat_limit = H.get_mob_temperature_threshold(HEAT_LEVEL_3)
 
 			if(pipe_air.temperature > heat_limit + 1)
 				buckled_mob.apply_damage(4 * log(pipe_air.temperature - heat_limit), BURN, BP_CHEST, used_weapon = "Excessive Heat")

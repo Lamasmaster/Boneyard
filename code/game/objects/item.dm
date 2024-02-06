@@ -84,7 +84,7 @@
 
 	var/tmp/has_inventory_icon	// do not set manually
 	var/tmp/use_single_icon
-	var/center_of_mass = @"{'x':16,'y':16}" //can be null for no exact placement behaviour
+	var/center_of_mass = @'{"x":16,"y":16}' //can be null for no exact placement behaviour
 
 /obj/item/proc/can_contaminate()
 	return !(obj_flags & ITEM_FLAG_NO_CONTAMINATION)
@@ -427,9 +427,10 @@
 			if(S.collection_mode) //Mode is set to collect all items
 				if(isturf(src.loc))
 					S.gather_all(src.loc, user)
+				return TRUE
 			else if(S.can_be_inserted(src, user))
 				S.handle_item_insertion(src)
-		return TRUE
+				return TRUE
 
 	if(has_extension(src, /datum/extension/loaded_cell))
 		var/datum/extension/loaded_cell/cell_loaded = get_extension(src, /datum/extension/loaded_cell)
@@ -456,10 +457,10 @@
 	for(var/obj/item/thing in user?.get_held_items())
 		thing.update_twohanding()
 	if(play_dropsound && drop_sound && SSticker.mode)
-		addtimer(CALLBACK(src, .proc/dropped_sound_callback), 0, (TIMER_OVERRIDE | TIMER_UNIQUE))
+		addtimer(CALLBACK(src, PROC_REF(dropped_sound_callback)), 0, (TIMER_OVERRIDE | TIMER_UNIQUE))
 
 	if(user && (z_flags & ZMM_MANGLE_PLANES))
-		addtimer(CALLBACK(user, /mob/proc/check_emissive_equipment), 0, TIMER_UNIQUE)
+		addtimer(CALLBACK(user, TYPE_PROC_REF(/mob, check_emissive_equipment)), 0, TIMER_UNIQUE)
 
 	RAISE_EVENT(/decl/observ/mob_unequipped, user, src)
 	RAISE_EVENT_REPEAT(/decl/observ/item_unequipped, src, user)
@@ -491,7 +492,7 @@
 	add_fingerprint(user)
 
 	hud_layerise()
-	addtimer(CALLBACK(src, .proc/reconsider_client_screen_presence, user.client, slot), 0)
+	addtimer(CALLBACK(src, PROC_REF(reconsider_client_screen_presence), user.client, slot), 0)
 
 	//Update two-handing status
 	var/mob/M = loc
@@ -502,11 +503,11 @@
 	if(user)
 		if(SSticker.mode)
 			if(pickup_sound && (slot in user.get_held_item_slots()))
-				addtimer(CALLBACK(src, .proc/pickup_sound_callback), 0, (TIMER_OVERRIDE | TIMER_UNIQUE))
+				addtimer(CALLBACK(src, PROC_REF(pickup_sound_callback)), 0, (TIMER_OVERRIDE | TIMER_UNIQUE))
 			else if(equip_sound)
-				addtimer(CALLBACK(src, .proc/equipped_sound_callback), 0, (TIMER_OVERRIDE | TIMER_UNIQUE))
+				addtimer(CALLBACK(src, PROC_REF(equipped_sound_callback)), 0, (TIMER_OVERRIDE | TIMER_UNIQUE))
 		if(z_flags & ZMM_MANGLE_PLANES)
-			addtimer(CALLBACK(user, /mob/proc/check_emissive_equipment), 0, TIMER_UNIQUE)
+			addtimer(CALLBACK(user, TYPE_PROC_REF(/mob, check_emissive_equipment)), 0, TIMER_UNIQUE)
 
 	RAISE_EVENT(/decl/observ/mob_equipped, user, src, slot)
 	RAISE_EVENT_REPEAT(/decl/observ/item_equipped, src, user, slot)
@@ -730,12 +731,12 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 
 	user.visible_message("\The [user] peers through [zoomdevicename ? "the [zoomdevicename] of [src]" : "[src]"].")
 
-	events_repository.register(/decl/observ/destroyed, user, src, /obj/item/proc/unzoom)
-	events_repository.register(/decl/observ/moved, user, src, /obj/item/proc/unzoom)
-	events_repository.register(/decl/observ/dir_set, user, src, /obj/item/proc/unzoom)
-	events_repository.register(/decl/observ/item_unequipped, src, src, /obj/item/proc/zoom_drop)
+	events_repository.register(/decl/observ/destroyed, user, src, TYPE_PROC_REF(/obj/item, unzoom))
+	events_repository.register(/decl/observ/moved, user, src, TYPE_PROC_REF(/obj/item, unzoom))
+	events_repository.register(/decl/observ/dir_set, user, src, TYPE_PROC_REF(/obj/item, unzoom))
+	events_repository.register(/decl/observ/item_unequipped, src, src, TYPE_PROC_REF(/obj/item, zoom_drop))
 	if(isliving(user))
-		events_repository.register(/decl/observ/stat_set, user, src, /obj/item/proc/unzoom)
+		events_repository.register(/decl/observ/stat_set, user, src, TYPE_PROC_REF(/obj/item, unzoom))
 
 /obj/item/proc/zoom_drop(var/obj/item/I, var/mob/user)
 	unzoom(user)
@@ -745,12 +746,12 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 		return
 	zoom = 0
 
-	events_repository.unregister(/decl/observ/destroyed, user, src, /obj/item/proc/unzoom)
-	events_repository.unregister(/decl/observ/moved, user, src, /obj/item/proc/unzoom)
-	events_repository.unregister(/decl/observ/dir_set, user, src, /obj/item/proc/unzoom)
-	events_repository.unregister(/decl/observ/item_unequipped, src, src, /obj/item/proc/zoom_drop)
+	events_repository.unregister(/decl/observ/destroyed, user, src, TYPE_PROC_REF(/obj/item, unzoom))
+	events_repository.unregister(/decl/observ/moved, user, src, TYPE_PROC_REF(/obj/item, unzoom))
+	events_repository.unregister(/decl/observ/dir_set, user, src, TYPE_PROC_REF(/obj/item, unzoom))
+	events_repository.unregister(/decl/observ/item_unequipped, src, src, TYPE_PROC_REF(/obj/item, zoom_drop))
 	if(isliving(user))
-		events_repository.unregister(/decl/observ/stat_set, user, src, /obj/item/proc/unzoom)
+		events_repository.unregister(/decl/observ/stat_set, user, src, TYPE_PROC_REF(/obj/item, unzoom))
 
 	if(!user.client)
 		return
@@ -930,6 +931,14 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 /obj/item/check_mousedrop_adjacency(var/atom/over, var/mob/user)
 	. = (loc == user && istype(over, /obj/screen)) || ..()
 
+// Supplied during loadout gear tweaking.
+/obj/item/proc/set_custom_name(var/new_name)
+	SetName(new_name)
+
+// Supplied during loadout gear tweaking.
+/obj/item/proc/set_custom_desc(var/new_desc)
+	desc = new_desc
+
 /obj/item/proc/setup_power_supply(loaded_cell_type, accepted_cell_type, power_supply_extension_type, charge_value)
 	SHOULD_CALL_PARENT(FALSE)
 	if(loaded_cell_type && accepted_cell_type)
@@ -937,4 +946,3 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 
 /obj/item/proc/handle_loadout_equip_replacement(obj/item/old_item)
 	return
-

@@ -6,11 +6,8 @@
 	turns_per_move = 5
 	meat_type = /obj/item/chems/food/fish
 	speed = -1
-	maxHealth = 250
-	health = 250
-
+	mob_default_max_health = 250
 	pixel_x = -16
-
 	harm_intent_damage = 5
 	natural_weapon = /obj/item/natural_weapon/bite
 
@@ -19,6 +16,9 @@
 	max_gas = null
 	minbodytemp = 0
 	faction = "carp"
+
+/mob/living/simple_animal/hostile/tree/check_has_mouth()
+	return FALSE
 
 /mob/living/simple_animal/hostile/tree/FindTarget()
 	. = ..()
