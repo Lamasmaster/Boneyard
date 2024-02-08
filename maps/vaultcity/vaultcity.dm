@@ -19,6 +19,9 @@ An urban map which is meant to be the one actually used.
 
 	#include "jobs\citizen.dm"
 	#include "jobs\council.dm"
+	#include "jobs\scimed.dm"
+	#include "jobs\security.dm"
+	#include "jobs\supply_maintenence.dm"
 
 	#include "vaultcity-1.dmm"
 

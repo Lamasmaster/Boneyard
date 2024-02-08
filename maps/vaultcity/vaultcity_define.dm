@@ -40,3 +40,6 @@
 		list("name" = "Supply",        "key" = "u", "frequency" = 1347, "color" = COMMS_COLOR_SUPPLY,    "span_class" = "supradio", "secured" = access_cargo),
 		list("name" = "Exploration",   "key" = "x", "frequency" = 1361, "color" = COMMS_COLOR_EXPLORER , "span_class" = "EXPradio", "secured" = access_eva)
 	)
+
+/datum/map/vaultcity/get_map_info()
+	return "Welcome to Northern Nevada within the finest of Vaults you will find safety from the chaos of the wastes."
